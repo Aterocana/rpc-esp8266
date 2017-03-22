@@ -1,3 +1,6 @@
+build/
+mongoose-os/
+
 # Object files
 *.o
 *.ko
