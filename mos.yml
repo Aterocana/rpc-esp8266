@@ -1,4 +1,5 @@
-# arch: PLATFORM   # possible values for PLATFORM: esp8266 cc3200
+arch: esp8266   # possible values for PLATFORM: esp8266 cc3200
+name: rpc-examples
 version: 1.0
 # mongoose_os_version determines the revision of the
 # https://github.com/cesanta/mongoose-os repository

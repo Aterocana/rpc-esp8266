@@ -99,6 +99,34 @@ static void toggle(struct mg_rpc_request_info *ri, void *cb_arg, struct mg_rpc_f
     (void) fi;
 }
 
+static void set_wifi(struct mg_rpc_request_info *ri, void *cb_arg, struct mg_rpc_frame_info *fi, struct mg_str args) {
+    struct mbuf fb;
+    struct json_out out = JSON_OUT_MBUF(&fb);
+    mbuf_init(&fb, 20);
+
+    char *ssid, *pwd;
+    int status = 0; //just to try it for now.
+    // sys_config_wifi_sta *cfg;
+
+    if (json_scanf(args.p, args.len, "{ssid: %Q, pwd: %Q}",&ssid, &pwd) == 2) {
+        printf("true\n");
+        printf("SSID=%s\n",ssid);
+        printf("PASS=%s\n",pwd);
+        // mgos_wifi_setup_sta(sys_config_wifi_sta *cfg);
+        status = 200;
+    }
+    json_printf(&out, "{status: %d}", status);
+
+    mg_rpc_send_responsef(ri, "%.*s", fb.len, fb.buf);
+    ri = NULL;
+    mbuf_free(&fb);
+
+    free(ssid);
+    free(pwd);
+    (void) cb_arg;
+    (void) fi;
+}
+
 enum mgos_app_init_result mgos_app_init(void)
 {
     mgos_wifi_add_on_change_cb(on_wifi_event, 0);
@@ -107,6 +135,8 @@ enum mgos_app_init_result mgos_app_init(void)
     mg_rpc_add_handler(c, "sum", "{num: %d}", sum, NULL);
     mg_rpc_add_handler(c, "add", "{add1: %d, add2: %d}", add, NULL);
     mg_rpc_add_handler(c, "pin", "{pin: %d}", toggle, NULL);
+
+    mg_rpc_add_handler(c, "setWifi", "{ssid: %s, pwd: %s}", set_wifi, NULL);
 
     return MGOS_APP_INIT_SUCCESS;
 }
